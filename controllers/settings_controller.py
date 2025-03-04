@@ -5,7 +5,7 @@ from config import get_dashboard_conf, set_dashboard_conf
 import urllib.parse
 from models import  regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from models.wireguard_model import *
-
+import hashlib 
 def settings():
   # ...
     message = ""

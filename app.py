@@ -32,9 +32,9 @@ def auth_req():
     session['dashboard_version'] = DASHBOARD_VERSION
     if req == "true":
         if '/static/' not in request.path and \
-                request.endpoint != "auth_views.signin" and \
-                request.endpoint != "auth_views.signout" and \
-                request.endpoint != "auth_views.auth" and \
+                request.endpoint != "auth_views.signin_route" and \
+                request.endpoint != "auth_views.signout_route" and \
+                request.endpoint != "auth_views.auth_route" and \
                 "username" not in session:
             print("User not loggedin - Attemped access: " + str(request.endpoint))
             if request.endpoint != "dashboard_views.index":
@@ -43,9 +43,9 @@ def auth_req():
                 session['message'] = ""
             return redirect(url_for("auth_views.signin_route")) 
     else:
-        if request.endpoint in ['auth_views.signin', 'auth_views.signout', 'auth_views.auth', 'settings_views.settings', 'settings_views.update_acct', 'settings_views.update_pwd',
-                                'settings_views.update_app_ip_port', 'settings_views.update_wg_conf_path']:
-            return redirect(url_for("dashboard_views.index"))
+        if request.endpoint in ['auth_views.signin_route', 'auth_views.signout_route', 'auth_views.auth_route', 'settings_views.settings', 'settings_views.update_acct_route', 'settings_views.update_pwd_route',
+                                'settings_views.update_app_ip_port_route', 'settings_views.update_wg_conf_path_route']:
+            return redirect(url_for("dashboard_views.index_route"))
 
 
 if __name__ == "__main__":
