@@ -38,11 +38,11 @@ def update_account():
         session['message'] = "Username update successfully!"
         session['message_status'] = "success"
         session['username'] = request.form['username']
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     except Exception:
         session['message'] = "Username update failed."
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
 def update_peer_default():
     # ...
     config = get_dashboard_conf()
@@ -51,13 +51,13 @@ def update_peer_default():
             len(request.form['peer_remote_endpoint']) == 0:
         session['message'] = "Please fill in all required boxes."
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     # Check DNS Format
     DNS = request.form['peer_global_DNS']
     if not check_DNS(DNS):
         session['message'] = "Peer DNS Format Incorrect."
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     DNS = DNS.replace(" ","").split(',')
     DNS = ",".join(DNS)
 
@@ -66,7 +66,7 @@ def update_peer_default():
     if not check_Allowed_IPs(ip):
         session['message'] = "Peer Endpoint Allowed IPs Format Incorrect. Example: 192.168.1.1/32 or 192.168.1.1/32,192.168.1.2/32"
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     # Check MTU Format
     if len(request.form['peer_mtu']) > 0:
         try:
@@ -74,7 +74,7 @@ def update_peer_default():
         except:
             session['message'] = "MTU format is incorrect."
             session['message_status'] = "danger"
-            return redirect(url_for("settings_views.settings")) # Dùng url_for
+            return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     # Check keepalive Format
     if len(request.form['peer_keep_alive']) > 0:
         try:
@@ -82,13 +82,13 @@ def update_peer_default():
         except:
             session['message'] = "Persistent keepalive format is incorrect."
             session['message_status'] = "danger"
-            return redirect(url_for("settings_views.settings")) # Dùng url_for
+            return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     # Check peer remote endpoint
     if not check_remote_endpoint(request.form['peer_remote_endpoint']):
         session[
             'message'] = "Peer Remote Endpoint format is incorrect. It can only be a valid IP address or valid domain (without http:// or https://). "
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
 
     config.set("Peers", "remote_endpoint", request.form['peer_remote_endpoint'])
     config.set("Peers", "peer_keep_alive", request.form['peer_keep_alive'])
@@ -99,11 +99,11 @@ def update_peer_default():
         set_dashboard_conf(config)
         session['message'] = "Peer Default Settings update successfully!"
         session['message_status'] = "success"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     except Exception:
         session['message'] = "Peer Default Settings update failed."
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings"))# Dùng url_for
+        return redirect(url_for("settings_views.settings_route"))# Dùng url_for
 
 def update_password():
     # ...
@@ -116,19 +116,19 @@ def update_password():
                 set_dashboard_conf(config)
                 session['message'] = "Password update successfully!"
                 session['message_status'] = "success"
-                return redirect(url_for("settings_views.settings")) # Dùng url_for
+                return redirect(url_for("settings_views.settings_route")) # Dùng url_for
             except Exception:
                 session['message'] = "Password update failed"
                 session['message_status'] = "danger"
-                return redirect(url_for("settings_views.settings")) # Dùng url_for
+                return redirect(url_for("settings_views.settings_route")) # Dùng url_for
         else:
             session['message'] = "Your New Password does not match."
             session['message_status'] = "danger"
-            return redirect(url_for("settings_views.settings")) # Dùng url_for
+            return redirect(url_for("settings_views.settings_route")) # Dùng url_for
     else:
         session['message'] = "Your Password does not match."
         session['message_status'] = "danger"
-        return redirect(url_for("settings_views.settings")) # Dùng url_for
+        return redirect(url_for("settings_views.settings_route")) # Dùng url_for
 def update_app_ip_port():
     # ...
     config = get_dashboard_conf()

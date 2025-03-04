@@ -27,7 +27,7 @@ def auth():
     if password.hexdigest() == config["Account"]["password"] and request.form['username'] == config["Account"][
         "username"]:
         session['username'] = request.form['username']
-        return redirect(url_for("dashboard_views.index")) #Dùng url_for
+        return redirect(url_for("dashboard_views.index_route")) #Dùng url_for
     else:
         session['message'] = "Username or Password is incorrect."
-        return redirect(url_for("auth_views.signin")) # Dùng url_for
+        return redirect(url_for("auth_views.signin_route")) # Dùng url_for
