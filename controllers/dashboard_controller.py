@@ -7,7 +7,7 @@ import urllib.parse
 from models import  regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from models.wireguard_model import *
 import hashlib 
-import ifcfg  
+import ifcfg 
 def index():
     config = get_dashboard_conf()
     wg_conf_path = config.get("Server", "wg_conf_path")
