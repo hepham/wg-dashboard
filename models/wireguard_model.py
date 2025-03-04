@@ -8,7 +8,7 @@ from tinydb import TinyDB, Query
 import os
 from . import regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from config import BASE_IP
-
+import ifcfg
 def read_conf_file_interface(config_name, wg_conf_path):
     # ... (Code của bạn) ...
     conf_location = wg_conf_path + "/" + config_name + ".conf"
@@ -258,9 +258,9 @@ def get_conf_listen_port(config_name, wg_conf_path):
             port = port.decode("UTF-8")
     conf.clear()
     return port
-def get_conf_status(config_name, interfaces):
-    # ...
-    if config_name in interfaces.keys():
+def get_conf_status(config_name):
+    ifconfig = dict(ifcfg.interfaces().items())
+    if config_name in ifconfig.keys():
         return "running"
     else:
         return "stopped"
