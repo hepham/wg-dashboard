@@ -2,7 +2,7 @@
 import configparser
 import secrets
 import ifcfg
-
+import os
 DASHBOARD_VERSION = 'v2.3.1'
 DASHBOARD_CONF = 'wg-dashboard.ini'
 DEFAULT_DNS = "1.1.1.1"
