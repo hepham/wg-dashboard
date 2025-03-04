@@ -4,7 +4,7 @@ from flask import Flask, request, session
 from flask_qrcode import QRcode
 import secrets
 from config import get_dashboard_conf, DASHBOARD_VERSION, init_dashboard_config
-
+from flask import Flask, request, session, redirect, url_for 
 # Import các Blueprint
 from views.dashboard_views import dashboard_views
 from views.config_views import config_views
