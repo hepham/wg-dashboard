@@ -41,7 +41,7 @@ def auth_req():
                 session['message'] = "You need to sign in first!"
             else:
                 session['message'] = ""
-            return redirect(url_for("auth_views.signin"))
+            return redirect(url_for("auth_views.signin_route")) 
     else:
         if request.endpoint in ['auth_views.signin', 'auth_views.signout', 'auth_views.auth', 'settings_views.settings', 'settings_views.update_acct', 'settings_views.update_pwd',
                                 'settings_views.update_app_ip_port', 'settings_views.update_wg_conf_path']:
