@@ -281,7 +281,7 @@ def get_conf_total_data(config_name):
     download_total = round(download_total, 4)
     db.close()
     return [total, upload_total, download_total]
-def get_conf_list():
+def get_conf_list(wg_conf_path):
     conf = []
     for i in os.listdir(wg_conf_path):
         if regex_match("^(.{1,}).(conf)$", i):
