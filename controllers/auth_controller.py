@@ -2,8 +2,9 @@
 #Tạo controller cho auth
 # controllers/auth_controller.py
 import hashlib
-from flask import request, redirect, url_for, session
+from flask import request, redirect, url_for, session,render_template
 from config import get_dashboard_conf
+
 
 def signin():
     # ...
