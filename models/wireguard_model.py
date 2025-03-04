@@ -286,7 +286,7 @@ def get_conf_list(wg_conf_path):
     for i in os.listdir(wg_conf_path):
         if regex_match("^(.{1,}).(conf)$", i):
             i = i.replace('.conf', '')
-            temp = {"conf": i, "status": get_conf_status(i), "public_key": get_conf_pub_key(i)}
+            temp = {"conf": i, "status": get_conf_status(i), "public_key": get_conf_pub_key(i,wg_conf_path)}
             if temp['status'] == "running":
                 temp['checked'] = 'checked'
             else:
