@@ -60,7 +60,7 @@ def get_config(config_name):
     conf_data = {
         "peer_data": get_peers(config_name, search, sort,wg_conf_path, peer_global_DNS, peer_endpoint_allowed_ip, peer_mtu, peer_keep_alive, remote_endpoint),
         "name": config_name,
-        "status": get_conf_status(config_name,interfaces=dict(ifcfg.interfaces().items())),
+        "status": get_conf_status(config_name),
         "total_data_usage": get_conf_total_data(config_name),
         "public_key": get_conf_pub_key(config_name, wg_conf_path),
         "listen_port": get_conf_listen_port(config_name, wg_conf_path),
