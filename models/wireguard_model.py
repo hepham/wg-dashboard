@@ -9,6 +9,7 @@ import os
 from . import regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from config import BASE_IP
 import ifcfg
+from operator import itemgetter
 def read_conf_file_interface(config_name, wg_conf_path):
     # ... (Code của bạn) ...
     conf_location = wg_conf_path + "/" + config_name + ".conf"
@@ -280,20 +281,19 @@ def get_conf_total_data(config_name):
     download_total = round(download_total, 4)
     db.close()
     return [total, upload_total, download_total]
-def get_conf_list(wg_conf_path):
-    # ...
+def get_conf_list():
     conf = []
     for i in os.listdir(wg_conf_path):
         if regex_match("^(.{1,}).(conf)$", i):
             i = i.replace('.conf', '')
-            temp = {"conf": i, "status": get_conf_status(i), "public_key": get_conf_pub_key(i, wg_conf_path)}
+            temp = {"conf": i, "status": get_conf_status(i), "public_key": get_conf_pub_key(i)}
             if temp['status'] == "running":
                 temp['checked'] = 'checked'
             else:
                 temp['checked'] = ""
             conf.append(temp)
     if len(conf) > 0:
-        conf = sorted(conf, key=itemgetter('conf'))  # Sửa thành itemgetter
+        conf = sorted(conf, key=itemgetter('conf'))
     return conf
 
 def gen_private_key():
