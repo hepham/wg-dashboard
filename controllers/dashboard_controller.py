@@ -19,7 +19,7 @@ def configuration(config_name):
     wg_conf_path = config.get("Server", "wg_conf_path")
     conf_data = {
         "name": config_name,
-        "status": get_conf_status(config_name,interfaces=dict(ifcfg.interfaces().items())),
+        "status": get_conf_status(config_name),
         "checked": ""
     }
     if conf_data['status'] == "stopped":
