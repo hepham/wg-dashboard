@@ -40,7 +40,7 @@ WGDashboard is a web application built with Flask that allows for the management
    ```bash
    python app.py
    ```
-
+```
 WGDashboard/
 │
 ├── app.py # Main file of the Flask application
@@ -58,7 +58,7 @@ WGDashboard/
 ├── static/ # Contains static files (CSS, JS, images)
 ├── config.py # Configuration file for the application
 └── requirements.txt # List of required libraries
-
+```
 5. Access the application through your browser at `http://localhost:10086`.
 
 ## Directory Structure
