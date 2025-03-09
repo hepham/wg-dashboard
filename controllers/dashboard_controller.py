@@ -132,7 +132,7 @@ def remove_peer_controller(config_name):
     delete_key = data['peer_id']
     config = get_dashboard_conf()
     wg_conf_path = config.get("Server", "wg_conf_path")
-    if get_conf_status(config_name,interfaces=dict(ifcfg.interfaces().items())) == "stopped":
+    if get_conf_status(config_name) == "stopped":
         return "Your need to turn on " + config_name + " first."
 
     if delete_key not in get_conf_peer_key(config_name):
