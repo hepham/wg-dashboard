@@ -1,5 +1,5 @@
 # controllers/dashboard_controller.py
-from flask import render_template, request, redirect, url_for, session, jsonify
+from flask import render_template, request, redirect, url_for, session, jsonify,make_response
 from models.wireguard_model import get_conf_list, get_conf_status, get_conf_total_data, switch_interface
 from models.dashboard_model import get_peers, get_peer_data, update_peer_data, add_peer, remove_peer
 from config import get_dashboard_conf, set_dashboard_conf
