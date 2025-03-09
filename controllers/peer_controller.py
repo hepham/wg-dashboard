@@ -8,6 +8,7 @@ import urllib.parse
 from models import  regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from models.wireguard_model import check_key_match, check_repeat_allowed_IP, gen_private_key, gen_public_key
 from icmplib import ping, multiping, traceroute, resolve, Host, Hop # Import icmplib
+from tinydb import TinyDB, Query
 def get_ping_ip_controller():
     # ...
     config_name = request.form['config']  # Sửa thành config_name cho đúng
