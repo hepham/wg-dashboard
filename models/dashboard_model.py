@@ -6,9 +6,8 @@ import re
 from operator import itemgetter
 from models.wireguard_model import get_all_peers_data
 
-def get_peers(config_name, search, sort_t, wg_conf_path, peer_global_DNS, peer_endpoint_allowed_ip, peer_mtu, peer_keep_alive, remote_endpoint):
-    get_all_peers_data(config_name, wg_conf_path, peer_global_DNS, peer_endpoint_allowed_ip, peer_mtu,
-                        peer_keep_alive, remote_endpoint)
+def get_peers(config_name, search, sort_t):
+    get_all_peers_data(config_name)
     db = TinyDB('db/' + config_name + '.json')
     peer = Query()
     if not search:

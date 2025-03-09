@@ -1,5 +1,5 @@
 # models/wireguard_model.py
-
+import time
 import subprocess
 import re
 import configparser
@@ -9,6 +9,7 @@ import os
 from . import regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from config import BASE_IP
 import ifcfg
+from config import get_dashboard_conf
 from operator import itemgetter
 def read_conf_file_interface(config_name, wg_conf_path):
     # ... (Code của bạn) ...
@@ -178,21 +179,19 @@ def get_allowed_ip(config_name, db, peers, conf_peer_data):
     # ...
     for i in conf_peer_data["Peers"]:
         db.update({"allowed_ip": i.get('AllowedIPs', '(None)')}, peers.id == i["PublicKey"])
-
-def get_all_peers_data(config_name, wg_conf_path, peer_global_DNS, peer_endpoint_allowed_ip, peer_mtu,peer_keep_alive,remote_endpoint):
-    # ...
+def get_all_peers_data(config_name):
     db = TinyDB('db/' + config_name + '.json')
     peers = Query()
-    conf_peer_data = read_conf_file(config_name,wg_conf_path)
-    # config = get_dashboard_conf() # Không cần thiết vì đã truyền các giá trị config
+    conf_peer_data = read_conf_file(config_name)
+    config = get_dashboard_conf()
     for i in conf_peer_data['Peers']:
         search = db.search(peers.id == i['PublicKey'])
         if not search:
             db.insert({
                 "id": i['PublicKey'],
                 "private_key": "",
-                "DNS": peer_global_DNS,
-                "endpoint_allowed_ip": peer_endpoint_allowed_ip,
+                "DNS": config.get("Peers", "peer_global_DNS"),
+                "endpoint_allowed_ip": config.get("Peers","peer_endpoint_allowed_ip"),
                 "name": "",
                 "total_receive": 0,
                 "total_sent": 0,
@@ -202,27 +201,27 @@ def get_all_peers_data(config_name, wg_conf_path, peer_global_DNS, peer_endpoint
                 "latest_handshake": "N/A",
                 "allowed_ip": "N/A",
                 "traffic": [],
-                "mtu": peer_mtu,
-                "keepalive": peer_keep_alive,
-                "remote_endpoint":remote_endpoint
+                "mtu": config.get("Peers", "peer_mtu"),
+                "keepalive": config.get("Peers","peer_keep_alive"),
+                "remote_endpoint":config.get("Peers","remote_endpoint")
             })
         else:
             # Update database since V2.2
             update_db = {}
             # Required peer settings
             if "DNS" not in search[0]:
-                update_db['DNS'] = peer_global_DNS
+                update_db['DNS'] = config.get("Peers", "peer_global_DNS")
             if "endpoint_allowed_ip" not in search[0]:
-                update_db['endpoint_allowed_ip'] = peer_endpoint_allowed_ip
+                update_db['endpoint_allowed_ip'] = config.get("Peers", "peer_endpoint_allowed_ip")
             # Not required peers settings (Only for QR code)
             if "private_key" not in search[0]:
                 update_db['private_key'] = ''
             if "mtu" not in search[0]:
-                update_db['mtu'] = peer_mtu
+                update_db['mtu'] = config.get("Peers", "peer_mtu")
             if "keepalive" not in search[0]:
-                update_db['keepalive'] = peer_keep_alive
+                update_db['keepalive'] = config.get("Peers","peer_keep_alive")
             if "remote_endpoint" not in search[0]:
-                update_db['remote_endpoint'] = remote_endpoint
+                update_db['remote_endpoint'] = config.get("Peers","remote_endpoint")
             db.update(update_db, peers.id == i['PublicKey'])
     # Remove peers no longer exist in WireGuard configuration file
     db_key = list(map(lambda a: a['id'], db.all()))
@@ -230,12 +229,13 @@ def get_all_peers_data(config_name, wg_conf_path, peer_global_DNS, peer_endpoint
     for i in db_key:
         if i not in wg_key:
             db.remove(peers.id == i)
-    # Removed time tracking
+    tic = time.perf_counter()
     get_latest_handshake(config_name, db, peers)
     get_transfer(config_name, db, peers)
     get_endpoint(config_name, db, peers)
     get_allowed_ip(config_name, db, peers, conf_peer_data)
-
+    toc = time.perf_counter()
+    print(f"Finish fetching data in {toc - tic:0.4f} seconds")
     db.close()
 def get_conf_pub_key(config_name, wg_conf_path):
     # ...
@@ -427,7 +427,7 @@ def create_client_config(config_name, data, wg_conf_path, default_dns, default_e
             "wg set " + config_name + " peer " + public_key + " allowed-ips " + allowed_ips, shell=True,
             stderr=subprocess.STDOUT)
         status = subprocess.check_output("wg-quick save " + config_name, shell=True, stderr=subprocess.STDOUT)
-        get_all_peers_data(config_name, wg_conf_path)
+        get_all_peers_data(config_name)
         db.update({"name": data['name'], "private_key": private_key, "DNS": default_dns,
                 "endpoint_allowed_ip": default_endpoint_allowed_ip},
                 peers.id == public_key)

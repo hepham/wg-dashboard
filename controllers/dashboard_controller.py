@@ -53,13 +53,8 @@ def get_config(config_name):
     if "Address" in interface_data:
         conf_address = interface_data['Address']
     wg_conf_path = config.get("Server", "wg_conf_path")
-    peer_global_DNS = config.get("Peers", "peer_global_DNS")
-    peer_endpoint_allowed_ip = config.get("Peers", "peer_endpoint_allowed_ip")
-    peer_mtu = config.get("Peers", "peer_mtu")
-    peer_keep_alive = config.get("Peers","peer_keep_alive")
-    remote_endpoint = config.get("Peers","remote_endpoint")
     conf_data = {
-        "peer_data": get_peers(config_name, search, sort,wg_conf_path, peer_global_DNS, peer_endpoint_allowed_ip, peer_mtu, peer_keep_alive, remote_endpoint),
+        "peer_data": get_peers(config_name, search, sort),
         "name": config_name,
         "status": get_conf_status(config_name),
         "total_data_usage": get_conf_total_data(config_name),
@@ -97,7 +92,7 @@ def switch(config_name):
 def add_peer_controller(config_name):
     # ...
     config = get_dashboard_conf()
-    wg_conf_path = config.get("Server", "wg_conf_path")
+    wg_conf_path = config.get("Server", "wg0")
     data = request.get_json()
     # ... (Kiểm tra dữ liệu đầu vào) ...
     if len(data['public_key']) == 0 or len(data['DNS']) == 0 or len(data['allowed_ips']) == 0 or len(data['endpoint_allowed_ip']) == 0:
@@ -118,15 +113,17 @@ def add_peer_controller(config_name):
             keep_alive = int(data['keep_alive'])
         except:
             return "Persistent Keepalive format is not correct."
+        
+    result = add_peer_to_conf(config_name, data['public_key'], data['allowed_ips'], wg_conf_path)
+    if result != "true":
+        return result  # Trả về thông báo lỗi nếu có
+    get_all_peers_data(config_name)
     # Thêm peer vào database (model)
     success, message = add_peer(config_name, data)
     if not success:
         return message
 
     # Thêm peer vào file config (model)
-    result = add_peer_to_conf(config_name, data['public_key'], data['allowed_ips'], wg_conf_path)
-    if result != "true":
-        return result  # Trả về thông báo lỗi nếu có
 
     return "true"
 def remove_peer_controller(config_name):
