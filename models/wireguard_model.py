@@ -12,7 +12,6 @@ import ifcfg
 from config import get_dashboard_conf
 from operator import itemgetter
 def read_conf_file_interface(config_name, wg_conf_path):
-    # ... (Code của bạn) ...
     conf_location = wg_conf_path + "/" + config_name + ".conf"
     f = open(conf_location, 'r')
     file = f.read().split("\n")
@@ -30,12 +29,11 @@ def read_conf_file_interface(config_name, wg_conf_path):
 
 
 def read_conf_file(config_name, wg_conf_path):
-    # ... (Code của bạn) ...
     conf_location = wg_conf_path + "/" + config_name + ".conf"
     f = open(conf_location, 'r')
     file = f.read().split("\n")
 
-    # Parse thành dict chứa Interface và Peers
+
     conf_peer_data = {
         "Interface": {},
         "Peers": []
@@ -69,7 +67,7 @@ def read_conf_file(config_name, wg_conf_path):
     return conf_peer_data
 
 def get_conf_peer_key(config_name):
-    # ...
+
     try:
         peer_key = subprocess.check_output("wg show " + config_name + " peers", shell=True)
         peer_key = peer_key.decode("UTF-8").split()
@@ -78,9 +76,9 @@ def get_conf_peer_key(config_name):
         return config_name + " is not running."
 
 def get_conf_running_peer_number(config_name):
-    # ...
+
     running = 0
-    # Get latest handshakes
+
     try:
         data_usage = subprocess.check_output("wg show " + config_name + " latest-handshakes", shell=True)
     except Exception:
@@ -96,8 +94,7 @@ def get_conf_running_peer_number(config_name):
         count += 2
     return running
 def get_latest_handshake(config_name, db, peers):
-    # ...
-    # Get latest handshakes
+
     try:
         data_usage = subprocess.check_output("wg show " + config_name + " latest-handshakes", shell=True)
     except Exception:
@@ -120,7 +117,7 @@ def get_latest_handshake(config_name, db, peers):
         count += 2
 
 def get_transfer(config_name, db, peers):
-    # ...
+
     try:
         data_usage = subprocess.check_output("wg show " + config_name + " transfer", shell=True)
     except Exception:
@@ -131,10 +128,9 @@ def get_transfer(config_name, db, peers):
     for i in range(int(len(data_usage) / 3)):
         cur_i = db.search(peers.id == data_usage[count])
 
-        # Kiểm tra và khởi tạo giá trị mặc định
-        total_sent = cur_i[0].get('total_sent', 0)  # Sử dụng get để lấy giá trị hoặc 0 nếu không tồn tại
-        total_receive = cur_i[0].get('total_receive', 0)  # Tương tự cho total_receive
-        traffic = cur_i[0].get('traffic', [])  # Khởi tạo traffic là danh sách rỗng nếu không tồn tại
+        total_sent = cur_i[0].get('total_sent', 0) 
+        total_receive = cur_i[0].get('total_receive', 0)  
+        traffic = cur_i[0].get('traffic', [])  # Khởi tạo traffic là danh sách rỗng nếu không tồn tạ
 
         cur_total_sent = round(int(data_usage[count + 2]) / (1024 ** 3), 4)
         cur_total_receive = round(int(data_usage[count + 1]) / (1024 ** 3), 4)
@@ -165,7 +161,7 @@ def get_transfer(config_name, db, peers):
         count += 3
 
 def get_endpoint(config_name, db, peers):
-    # ...
+
     try:
         data_usage = subprocess.check_output("wg show " + config_name + " endpoints", shell=True)
     except Exception:
@@ -176,7 +172,7 @@ def get_endpoint(config_name, db, peers):
         db.update({"endpoint": data_usage[count + 1]}, peers.id == data_usage[count])
         count += 2
 def get_allowed_ip(config_name, db, peers, conf_peer_data):
-    # ...
+
     for i in conf_peer_data["Peers"]:
         db.update({"allowed_ip": i.get('AllowedIPs', '(None)')}, peers.id == i["PublicKey"])
 def get_all_peers_data(config_name):
@@ -208,14 +204,13 @@ def get_all_peers_data(config_name):
                 "remote_endpoint":config.get("Peers","remote_endpoint")
             })
         else:
-            # Update database since V2.2
+
             update_db = {}
-            # Required peer settings
+
             if "DNS" not in search[0]:
                 update_db['DNS'] = config.get("Peers", "peer_global_DNS")
             if "endpoint_allowed_ip" not in search[0]:
                 update_db['endpoint_allowed_ip'] = config.get("Peers", "peer_endpoint_allowed_ip")
-            # Not required peers settings (Only for QR code)
             if "private_key" not in search[0]:
                 update_db['private_key'] = ''
             if "mtu" not in search[0]:
@@ -225,7 +220,7 @@ def get_all_peers_data(config_name):
             if "remote_endpoint" not in search[0]:
                 update_db['remote_endpoint'] = config.get("Peers","remote_endpoint")
             db.update(update_db, peers.id == i['PublicKey'])
-    # Remove peers no longer exist in WireGuard configuration file
+
     db_key = list(map(lambda a: a['id'], db.all()))
     wg_key = list(map(lambda a: a['PublicKey'], conf_peer_data['Peers']))
     for i in db_key:
@@ -240,7 +235,7 @@ def get_all_peers_data(config_name):
     print(f"Finish fetching data in {toc - tic:0.4f} seconds")
     db.close()
 def get_conf_pub_key(config_name, wg_conf_path):
-    # ...
+
     conf = configparser.ConfigParser(strict=False)
     conf.read(wg_conf_path + "/" + config_name + ".conf")
     pri = conf.get("Interface", "PrivateKey")
@@ -249,7 +244,7 @@ def get_conf_pub_key(config_name, wg_conf_path):
     return pub.decode().strip("\n")
 
 def get_conf_listen_port(config_name, wg_conf_path):
-    # ...
+
     conf = configparser.ConfigParser(strict=False)
     conf.read(wg_conf_path + "/" + config_name + ".conf")
     port = ""
@@ -268,7 +263,7 @@ def get_conf_status(config_name):
     else:
         return "stopped"
 def get_conf_total_data(config_name):
-    # ...
+
     db = TinyDB('db/' + config_name + '.json')
     upload_total = 0
     download_total = 0
@@ -299,7 +294,7 @@ def get_conf_list(wg_conf_path):
     return conf
 
 def gen_private_key():
-    # ...
+
     gen = subprocess.check_output('wg genkey > private_key.txt && wg pubkey < private_key.txt > public_key.txt',
                                 shell=True)
     private = open('private_key.txt')
@@ -313,7 +308,7 @@ def gen_private_key():
     os.remove('public_key.txt')
     return data
 def gen_public_key(private_key):
-    # ...
+
     pri_key_file = open('private_key.txt', 'w')
     pri_key_file.write(private_key)
     pri_key_file.close()
@@ -329,7 +324,6 @@ def gen_public_key(private_key):
         return {"status": 'failed', "msg": "Key is not the correct length or format", "data": ""}
 
 def check_key_match(private_key, public_key, config_name):
-    # ...
     result = gen_public_key(private_key)
     if result['status'] == 'failed':
         return result
@@ -342,7 +336,6 @@ def check_key_match(private_key, public_key, config_name):
         else:
             return {'status': 'success'}
 def check_repeat_allowed_IP(public_key, ip, config_name):
-    # ...
     db = TinyDB('db/' + config_name + '.json')
     peers = Query()
     peer = db.search(peers.id == public_key)
@@ -356,7 +349,6 @@ def check_repeat_allowed_IP(public_key, ip, config_name):
             return {'status': 'success'}
 
 def add_peer_to_conf(config_name, public_key, allowed_ips, wg_conf_path):
-    # ...
     try:
         status = subprocess.check_output(
             "wg set " + config_name + " peer " + public_key + " allowed-ips " + allowed_ips, shell=True,
@@ -367,7 +359,7 @@ def add_peer_to_conf(config_name, public_key, allowed_ips, wg_conf_path):
         return exc.output.strip()
 
 def remove_peer_from_conf(config_name, delete_key, wg_conf_path):
-    # ...
+
     try:
         status = subprocess.check_output("wg set " + config_name + " peer " + delete_key + " remove", shell=True,
                                          stderr=subprocess.STDOUT)
@@ -392,7 +384,6 @@ def update_peer_allowed_ips(config_name, peer_id, allowed_ip):
         return False, exc.output.decode("UTF-8").strip()
 
 def switch_interface(config_name, operation):
-    # ...
     if operation not in ["up", "down"]:
         raise ValueError("Invalid operation.  Must be 'up' or 'down'.")
     try:
@@ -446,7 +437,6 @@ def create_client_config(config_name, data, wg_conf_path, default_dns, default_e
         filename = "Untitled_Peers"
     else:
         filename = data["name"]
-                # Clean filename
         illegal_filename = [".", ",", "/", "?", "<", ">", "\\", ":", "*", '|' '\"', "com1", "com2", "com3",
                         "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4",
                     "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "con", "nul", "prn"]
@@ -493,7 +483,7 @@ def generate_peer_config(config_name, peer_id, wg_conf_path, remote_endpoint):
                 filename = "Untitled_Peers"
             else:
                 filename = peer['name']
-                # Clean filename
+
                 illegal_filename = [".", ",", "/", "?", "<", ">", "\\", ":", "*", '|' '\"', "com1", "com2", "com3",
                                     "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4",
                                     "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "con", "nul", "prn"]
@@ -508,15 +498,12 @@ def generate_peer_config(config_name, peer_id, wg_conf_path, remote_endpoint):
     return None, None
 
 def cleanup_inactive_peers(config_name='wg0', threshold=180):
-        """Xóa các peer không hoạt động trong 3 phút"""
         try:
-            # Lấy danh sách peer hiện tại từ WireGuard
             dump = subprocess.check_output(
                 ['wg', 'show', config_name, 'dump'],
                 text=True
             )
-            
-            # Parse thông tin handshake
+
             active_peers = {}
             for line in dump.split('\n')[1:]: 
                 if line:
@@ -525,7 +512,6 @@ def cleanup_inactive_peers(config_name='wg0', threshold=180):
                     last_handshake = int(parts[4])
                     active_peers[pubkey] = last_handshake
 
-            # Xử lý database
             db = TinyDB(f"db/{config_name}.json")
             peers = Query()
             current_time = int(time.time())
@@ -534,7 +520,6 @@ def cleanup_inactive_peers(config_name='wg0', threshold=180):
                 pubkey = peer['id']
                 handshake_time = active_peers.get(pubkey, 0)
 
-                # Kiểm tra thời gian không hoạt động
                 if handshake_time == 0 or (current_time - handshake_time) > threshold:
                     try:
                         # Xóa khỏi WireGuard
@@ -546,13 +531,12 @@ def cleanup_inactive_peers(config_name='wg0', threshold=180):
                             'remove'
                         ])
                         
-                        # Xóa khỏi database
+
                         db.remove(doc_ids=[peer.doc_id])
                         
                     except Exception as e:
                         print(f"error delete peer {pubkey}: {str(e)}")
 
-            # Lưu cấu hình và đóng DB
             subprocess.check_call(['wg-quick', 'save', config_name])
             db.close()
 

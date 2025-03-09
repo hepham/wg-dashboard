@@ -14,21 +14,20 @@ from views.peer_views import peer_views
 
 app = Flask("WGDashboard")
 app.secret_key = secrets.token_urlsafe(16)
-app.config['TEMPLATES_AUTO_RELOAD'] = True  # Tự động reload template khi thay đổi
+app.config['TEMPLATES_AUTO_RELOAD'] = True 
 QRcode(app)
 
-# Register các Blueprint
 app.register_blueprint(dashboard_views)
 app.register_blueprint(config_views)
 app.register_blueprint(settings_views)
 app.register_blueprint(auth_views)
 app.register_blueprint(peer_views)
-# Before request (xử lý xác thực)
+
 @app.before_request
 def auth_req():
     config = get_dashboard_conf()
     req = config.get("Server", "auth_req")
-    session['update'] = ""  # Bạn cần định nghĩa biến update
+    session['update'] = ""  
     session['dashboard_version'] = DASHBOARD_VERSION
     if req == "true":
         if '/static/' not in request.path and \
