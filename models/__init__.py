@@ -1,4 +1,3 @@
-# models/utils.py
 import re
 # Clean IP with range
 def clean_IP_with_range(ip):

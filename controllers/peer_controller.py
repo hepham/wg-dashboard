@@ -1,17 +1,14 @@
-# Tạo controller cho peer
-# controllers/peer_controller.py
 from flask import render_template, request, redirect, url_for, session, jsonify
 from models.wireguard_model import get_conf_list, get_conf_status, get_conf_total_data, switch_interface, get_conf_peer_key
 from models.dashboard_model import get_peers, get_peer_data, update_peer_data, add_peer, remove_peer
 from config import get_dashboard_conf
-import urllib.parse
 from models import  regex_match, check_IP_with_range, check_DNS, check_Allowed_IPs, check_remote_endpoint
 from models.wireguard_model import check_key_match, check_repeat_allowed_IP, gen_private_key, gen_public_key
 from icmplib import ping, multiping, traceroute, resolve, Host, Hop # Import icmplib
 from tinydb import TinyDB, Query
 def get_ping_ip_controller():
     # ...
-    config_name = request.form['config']  # Sửa thành config_name cho đúng
+    config_name = request.form['config'] 
     db = TinyDB('db/' + config_name + '.json')
     html = ""
     for i in db.all():
@@ -49,7 +46,6 @@ def ping_ip_controller():
     except Exception:
         return "Error"
 def traceroute_ip_controller():
-    # ...
     try:
         result = traceroute('' + request.form['ip'] + '', first_hop=1, max_hops=30, count=1, fast=True)
         returnjson = []

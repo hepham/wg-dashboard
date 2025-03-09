@@ -49,9 +49,8 @@ def auth_req():
 
 
 if __name__ == "__main__":
-    init_dashboard_config()  # Khởi tạo config
+    init_dashboard_config()  
     config = get_dashboard_conf()
     app_ip = config.get("Server", "app_ip")
     app_port = config.get("Server", "app_port")
-    # wg_conf_path = config.get("Server", "wg_conf_path") # Không cần thiết ở đây
     app.run(host=app_ip, debug=False, port=app_port)

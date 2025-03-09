@@ -1,4 +1,3 @@
-# views/peer_views.py
 from flask import Blueprint
 from controllers.peer_controller import  get_ping_ip_controller, ping_ip_controller, traceroute_ip_controller
 

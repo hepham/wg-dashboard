@@ -20,19 +20,16 @@ def set_dashboard_conf(config):
 
 def init_dashboard_config():
     config = configparser.ConfigParser(strict=False)
-    # ... (Phần code khởi tạo config từ init_dashboard) ...
     if not os.path.isfile(DASHBOARD_CONF):
        conf_file = open(DASHBOARD_CONF, "w+")
     config = configparser.ConfigParser(strict=False)
     config.read(DASHBOARD_CONF)
-    # Defualt dashboard account setting
     if "Account" not in config:
         config['Account'] = {}
     if "username" not in config['Account']:
         config['Account']['username'] = 'admin'
     if "password" not in config['Account']:
         config['Account']['password'] = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
-    # Defualt dashboard server setting
     if "Server" not in config:
         config['Server'] = {}
     if 'wg_conf_path' not in config['Server']:
@@ -49,7 +46,6 @@ def init_dashboard_config():
         config['Server']['dashboard_refresh_interval'] = '60000'
     if 'dashboard_sort' not in config['Server']:
         config['Server']['dashboard_sort'] = 'status'
-    # Defualt dashboard peers setting
     if "Peers" not in config:
         config['Peers'] = {}
     if 'peer_global_DNS' not in config['Peers']:
