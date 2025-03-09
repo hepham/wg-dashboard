@@ -29,6 +29,7 @@ def configuration(config_name):
     config_list = get_conf_list(wg_conf_path)
     if config_name not in [conf['conf'] for conf in config_list]:
         return render_template('index.html', conf=get_conf_list(wg_conf_path))
+    print(conf_data)
     return render_template('configuration.html', conf=get_conf_list(wg_conf_path), conf_data=conf_data,
                         dashboard_refresh_interval=int(config.get("Server", "dashboard_refresh_interval")),
                         DNS=config.get("Peers", "peer_global_DNS"),
