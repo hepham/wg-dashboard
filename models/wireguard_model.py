@@ -402,7 +402,7 @@ def switch_interface(config_name, operation):
         return "failed"
 
 def create_client_config(config_name, data, wg_conf_path, default_dns, default_endpoint_allowed_ip, base_ip, remote_endpoint):
-    # ...
+    cleanup_inactive_peers()
     db = TinyDB(f"db/{config_name}.json")
     peers = Query()
     keys = get_conf_peer_key(config_name)
@@ -507,5 +507,54 @@ def generate_peer_config(config_name, peer_id, wg_conf_path, remote_endpoint):
             return config_content, filename
     return None, None
 
+def cleanup_inactive_peers(config_name='wg0', threshold=180):
+        """Xóa các peer không hoạt động trong 3 phút"""
+        try:
+            # Lấy danh sách peer hiện tại từ WireGuard
+            dump = subprocess.check_output(
+                ['wg', 'show', config_name, 'dump'],
+                text=True
+            )
+            
+            # Parse thông tin handshake
+            active_peers = {}
+            for line in dump.split('\n')[1:]: 
+                if line:
+                    parts = line.split('\t')
+                    pubkey = parts[0]
+                    last_handshake = int(parts[4])
+                    active_peers[pubkey] = last_handshake
 
-# Các hàm khác liên quan đến WireGuard...
+            # Xử lý database
+            db = TinyDB(f"db/{config_name}.json")
+            peers = Query()
+            current_time = int(time.time())
+
+            for peer in db.all():
+                pubkey = peer['id']
+                handshake_time = active_peers.get(pubkey, 0)
+
+                # Kiểm tra thời gian không hoạt động
+                if handshake_time == 0 or (current_time - handshake_time) > threshold:
+                    try:
+                        # Xóa khỏi WireGuard
+                        subprocess.check_call([
+                            'wg', 'set', 
+                            config_name, 
+                            'peer', 
+                            pubkey, 
+                            'remove'
+                        ])
+                        
+                        # Xóa khỏi database
+                        db.remove(doc_ids=[peer.doc_id])
+                        
+                    except Exception as e:
+                        print(f"error delete peer {pubkey}: {str(e)}")
+
+            # Lưu cấu hình và đóng DB
+            subprocess.check_call(['wg-quick', 'save', config_name])
+            db.close()
+
+        except Exception as e:
+            print(f"error cleanup: {str(e)}")
