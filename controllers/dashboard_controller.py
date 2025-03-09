@@ -92,7 +92,7 @@ def switch(config_name):
 def add_peer_controller(config_name):
     # ...
     config = get_dashboard_conf()
-    wg_conf_path = config.get("Server", "wg0")
+    wg_conf_path = config.get("Server", "wg_conf_path")
     data = request.get_json()
     # ... (Kiểm tra dữ liệu đầu vào) ...
     if len(data['public_key']) == 0 or len(data['DNS']) == 0 or len(data['allowed_ips']) == 0 or len(data['endpoint_allowed_ip']) == 0:
