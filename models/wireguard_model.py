@@ -467,6 +467,7 @@ def create_client_config(config_name, data, wg_conf_path, default_dns, default_e
             AllowedIPs = 0.0.0.0/0
             PersistentKeepalive = {data.get('keep_alive', 25)}
             """
+    print(config_content)
     return config_content, None
 
 def generate_peer_config(config_name, peer_id, wg_conf_path, remote_endpoint):
