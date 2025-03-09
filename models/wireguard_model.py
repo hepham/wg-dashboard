@@ -182,8 +182,10 @@ def get_allowed_ip(config_name, db, peers, conf_peer_data):
 def get_all_peers_data(config_name):
     db = TinyDB('db/' + config_name + '.json')
     peers = Query()
-    conf_peer_data = read_conf_file(config_name)
     config = get_dashboard_conf()
+    wg_conf_path = config.get("Server", "wg_conf_path")
+    conf_peer_data = read_conf_file(config_name,wg_conf_path)
+
     for i in conf_peer_data['Peers']:
         search = db.search(peers.id == i['PublicKey'])
         if not search:
